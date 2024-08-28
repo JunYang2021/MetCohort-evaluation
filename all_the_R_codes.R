@@ -10,40 +10,40 @@ df <- data.frame(methods = factor(methods, levels = methods), features, hit, lab
 
 scaling_factor <- max(features) / max(hit) / 1.2
 
-p <- ggplot(df, aes(x = methods)) +
-  geom_point(aes(y = features, color = "Total features"), size = 3) +
-  geom_point(aes(y = hit * scaling_factor, color = "Hit number"), size = 3) +
-  geom_line(aes(y = features, group = 1), color = "#a6cee3") +
-  geom_line(aes(y = hit * scaling_factor, group = 1), color = "#1f78b4") +
-  geom_text(aes(y = features, label = features), vjust = -0.7) +
-  geom_text(aes(y = hit * scaling_factor, label = labels), vjust = 2, size = 3) +
-  labs(y = "Total features", x = NULL) +
-  theme_minimal(base_size = 14, base_family = "") +
+df_long <- data.frame(
+  methods = factor(rep(methods, 2), levels = methods),
+  measurement_type = factor(rep(c("Total features", "Hit number"), each = 4), 
+                            levels = c("Total features", "Hit number")),
+  value = c(features, hit * scaling_factor)
+)
+
+p <- ggplot(df_long, aes(x = methods, y = value, fill = measurement_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = c(features, labels)), 
+            vjust = -0.9, 
+            hjust = ifelse(df_long$measurement_type == "Total features", 1.15, 0.15),
+            size = 2.2) +
+  scale_y_continuous(name = "Total features", 
+                     limits = c(0, max(features) * 1.1), 
+                     sec.axis = sec_axis(~./scaling_factor, name = "Hit number")) +
+  scale_fill_manual(values = c("Total features" = "#a6cee3", "Hit number" = "#1f78b4")) +
+  labs(x = NULL) +
+  theme_minimal(base_size = 10) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        panel.background = element_rect(fill = "white"),
-        panel.border = element_rect(fill = NA, color = "black", size = 0.7), # Line at the top
-        axis.line = element_line(color = "black", size = 0.35),
-        axis.text.y = element_blank(), # Remove y-axis numbers
-        axis.text.x = element_text(colour = 'black', size = 12),
-        legend.title = element_blank(),
-        legend.background = element_rect(fill="white", colour="black"), # Legend in a box
-        legend.key = element_rect(fill = "white", color = "white"),
-        legend.key.size = unit(0.4, "lines"),
-        legend.key.height = unit(1, "lines"),
-        legend.spacing.y = unit(0.1, "lines"),
-        legend.position = c(0.96, 0.98),
+        # axis.text.y = element_blank(),  # Remove y-axis labels
+        # axis.ticks.y = element_blank(), # Remove y-axis ticks
+        axis.text.x = element_text(colour = 'black', size = 8),
+        legend.position = c(0.84, 0.99),
         legend.justification = c("right", "top"),
-        legend.box.just = "right",
-        legend.margin = margin(2, 2, 2, 2)) 
-
-p <- p +
-  scale_y_continuous(limits = c(15000, 42000), sec.axis = sec_axis(~./scaling_factor, name = "Hit number")) +
-  scale_color_manual(values = c("Total features" = "#a6cee3", "Hit number" = "#1f78b4"), name = NULL) 
+        legend.title = element_blank(),
+        legend.background = element_rect(fill="white", linewidth=0.2),
+        legend.margin = margin(0, 0.3, 0, 0.3),
+        panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(fill = NA, color = "black", size = 0))
 
 print(p)
-ggsave('D:/Metabolomics2022/文章/peakmat文章/peakmat article 20240513/pictures/figure4/mix39 detection rate.tiff', plot = p, width = 4, height = 3, dpi = 300, compression = "lzw")
-
+ggsave('D:/Metabolomics2022/文章/peakmat文章/peakmat article 20240513/pictures/figure4/mix39 detection rate_bar_2.tiff', plot = p, width = 4, height = 3, dpi = 300, compression = "lzw")
 
 # figure 4b, 4c
 library(extrafont)
