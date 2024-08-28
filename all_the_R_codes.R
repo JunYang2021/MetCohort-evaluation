@@ -2,9 +2,9 @@
 library(tidyverse)
 
 methods <- c("XCMS", "Mzmine 3", "MS-DIAL", "MetCohort")
-features <- c(16532, 40596, 22073, 15910)
-hit <- c(425, 435, 383, 432)
-labels <- c('425(97.5%)', '435(99.8%)', '383(87.8%)','432(99.1%)')
+features <- c(16253, 33721, 20117, 15910)
+hit <- c(424, 434, 382, 432)
+labels <- c('424(97.2%)', '434(99.5%)', '382(87.6%)','432(99.1%)')
 
 df <- data.frame(methods = factor(methods, levels = methods), features, hit, labels)
 
